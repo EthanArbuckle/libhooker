@@ -33,10 +33,10 @@ int LHHookFunction(void *symbol, void *hook, void **old, uint8_t jmp_reg){
     int disasm_entries;
     LHGetDisasmRegistry(&disasm_reg, &disasm_entries);
     
-    uint8_t disasmSize = 3;
-    uint8_t trampSize = 3;
+    uint8_t disasmSize = 5;
+    uint8_t trampSize = 4;
 #define disasmEnd (disasmSize - 1)
-#define finalSize (disasmSize + 1)
+#define finalSize (disasmSize + 2)
     
     struct disasm_reg_t ret_entry = disasm_reg[0]; //first is always the ret instruction
     uint32_t *start_op = (uint32_t *)ptrauth_strip(symbol, ptrauth_key_asia);
@@ -249,6 +249,7 @@ int LHHookFunction(void *symbol, void *hook, void **old, uint8_t jmp_reg){
     replacement_instrs[1] = add_inst;
 #endif
     replacement_instrs[2] = assemble_br(BR_OP, jmp_reg, 0, PAC_NONE);
+    replacement_instrs[3] = 0xaa1103f0; // mov x16, x17
     
     #if PRINT_TRAMP
     for (int i = 0; i < trampSize; i++){

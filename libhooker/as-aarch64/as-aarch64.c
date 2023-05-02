@@ -80,14 +80,17 @@ uint32_t *assemble_jmp(uint64_t targetAddr, bool link, uint8_t jmp_reg){
     uint32_t br = assemble_br(link ? BLR_OP : BR_OP, jmp_reg, 0, PAC_NONE);
     
     uint32_t *instrs = malloc(sizeof(uint32_t) * JMPSIZ);
-    instrs[0] = first_movz;
-    instrs[1] = second_movk;
+    
+    int instr_idx = 0;
+    instrs[instr_idx++] = 0xaa1003f1; // mov x17, x16
+    instrs[instr_idx++] = first_movz;
+    instrs[instr_idx++] = second_movk;
 #if __LP64__
-    instrs[2] = third_movk;
-    instrs[3] = fourth_movk;
-    instrs[4] = br;
+    instrs[instr_idx++] = third_movk;
+    instrs[instr_idx++] = fourth_movk;
+    instrs[instr_idx++] = br;
 #else
-    instrs[2] = br;
+    instrs[instr_idx++] = br;
 #endif
     return instrs;
 }

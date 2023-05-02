@@ -24,7 +24,7 @@
 #endif
 
 #if __LP64__
-#define JMPSIZ 5
+#define JMPSIZ 6
 #else
 #define JMPSIZ 3
 #endif
