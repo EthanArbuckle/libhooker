@@ -281,6 +281,30 @@ kern_return_t test_LHFunctionHook__double_hook(void) {
     return KERN_SUCCESS;
 }
 
+__attribute__((aligned(0x4000)))
+static int (*_test_LHFunctionHook__unlink_orig)(const char *);
+static int _test_LHFunctionHook__unlink_replacement(const char *path) { getpid(); return 14; }
+static int test_LHFunctionHook__unlink(void) {
+    
+    // Someone mentioned that calling orig on hooked unlink() fails on ellekit
+    struct LHFunctionHook hooks[] = {
+        {&unlink, &_test_LHFunctionHook__unlink_replacement, &_test_LHFunctionHook__unlink_orig}
+    };
+    int successfulHooks = LHHookFunctions(hooks, 1);
+    ASSERT(successfulHooks == 1, "LHHookFunctions failed");
+    ASSERT(_test_LHFunctionHook__unlink_orig != NULL, "Original function ptr is null");
+    
+    NSString *tmpTestFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"lh-tmp-test"];
+    [[NSFileManager defaultManager] createFileAtPath:tmpTestFile contents:nil attributes:nil];
+    
+    ASSERT(_test_LHFunctionHook__unlink_orig(tmpTestFile.UTF8String) == 0, "The orig fp didn't return the expected value");
+    
+    ASSERT([[NSFileManager defaultManager] fileExistsAtPath:tmpTestFile] == NO, "unlink_orig did not delete the file");
+    [[NSFileManager defaultManager] removeItemAtPath:tmpTestFile error:nil];
+
+    return KERN_SUCCESS;
+}
+
 void tests(void) {
 
     RUN_TEST(test_LHOpenImage);
@@ -294,6 +318,7 @@ void tests(void) {
 
     RUN_TEST(test_LHFunctionHook__single_function);
     RUN_TEST(test_LHFunctionHook__double_hook);
+    RUN_TEST(test_LHFunctionHook__unlink);
 }
 
 void (*origBadFunction)(void *ptr, void *ptr2);
