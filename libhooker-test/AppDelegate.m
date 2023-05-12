@@ -14,8 +14,8 @@
 
 @implementation AppDelegate
 
-- (void)test {
-    NSLog(@"This is a test objc method.");
+- (int)test {
+    return 1;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

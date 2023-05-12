@@ -37,9 +37,7 @@
 		F1D82F342308C08000EECCAE /* dyldSyms.c in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F332308C08000EECCAE /* dyldSyms.c */; };
 		F1D82F422308C7A000EECCAE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F412308C7A000EECCAE /* AppDelegate.m */; };
 		F1D82F452308C7A000EECCAE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F442308C7A000EECCAE /* ViewController.m */; };
-		F1D82F482308C7A000EECCAE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1D82F462308C7A000EECCAE /* Main.storyboard */; };
 		F1D82F4A2308C7A100EECCAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1D82F492308C7A100EECCAE /* Assets.xcassets */; };
-		F1D82F4D2308C7A100EECCAE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1D82F4B2308C7A100EECCAE /* LaunchScreen.storyboard */; };
 		F1D82F502308C7A100EECCAE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F4F2308C7A100EECCAE /* main.m */; };
 		F1D82F5A2308C7A100EECCAE /* libhooker_testTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F592308C7A100EECCAE /* libhooker_testTests.m */; };
 		F1D82F652308C7A100EECCAE /* libhooker_testUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = F1D82F642308C7A100EECCAE /* libhooker_testUITests.m */; };
@@ -224,9 +222,7 @@
 		F1D82F412308C7A000EECCAE /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		F1D82F432308C7A000EECCAE /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		F1D82F442308C7A000EECCAE /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		F1D82F472308C7A000EECCAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F1D82F492308C7A100EECCAE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F1D82F4C2308C7A100EECCAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F1D82F4E2308C7A100EECCAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F1D82F4F2308C7A100EECCAE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F1D82F552308C7A100EECCAE /* libhooker-testTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "libhooker-testTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -479,9 +475,7 @@
 				F1D82F412308C7A000EECCAE /* AppDelegate.m */,
 				F1D82F432308C7A000EECCAE /* ViewController.h */,
 				F1D82F442308C7A000EECCAE /* ViewController.m */,
-				F1D82F462308C7A000EECCAE /* Main.storyboard */,
 				F1D82F492308C7A100EECCAE /* Assets.xcassets */,
-				F1D82F4B2308C7A100EECCAE /* LaunchScreen.storyboard */,
 				F1D82F4E2308C7A100EECCAE /* Info.plist */,
 				F1D82F4F2308C7A100EECCAE /* main.m */,
 			);
@@ -797,9 +791,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1D82F4D2308C7A100EECCAE /* LaunchScreen.storyboard in Resources */,
 				F1D82F4A2308C7A100EECCAE /* Assets.xcassets in Resources */,
-				F1D82F482308C7A000EECCAE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -969,22 +961,6 @@
 			name = Interface.storyboard;
 			sourceTree = "<group>";
 		};
-		F1D82F462308C7A000EECCAE /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F1D82F472308C7A000EECCAE /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		F1D82F4B2308C7A100EECCAE /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F1D82F4C2308C7A100EECCAE /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -994,7 +970,7 @@
 				ARCHS = arm64_32;
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TCM49M8P5K;
+				DEVELOPMENT_TEAM = 44L979X757;
 				INFOPLIST_FILE = "libhooker-watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1274,11 +1250,15 @@
 		F1D82F2F2308BF3000EECCAE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				CODE_SIGN_STYLE = Automatic;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1286,11 +1266,15 @@
 		F1D82F302308BF3000EECCAE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				CODE_SIGN_STYLE = Automatic;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1298,9 +1282,11 @@
 		F1D82F682308C7A100EECCAE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TCM49M8P5K;
+				DEVELOPMENT_TEAM = 44L979X757;
 				INFOPLIST_FILE = "libhooker-test/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1310,7 +1296,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.coolstar.libhooker-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,3";
 				VALID_ARCHS = "arm64 arm64e";
 			};
 			name = Debug;
@@ -1318,6 +1307,8 @@
 		F1D82F692308C7A100EECCAE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TCM49M8P5K;
@@ -1330,7 +1321,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.coolstar.libhooker-test";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2,3";
 				VALID_ARCHS = "arm64 arm64e";
 			};
 			name = Release;
@@ -1408,12 +1402,16 @@
 		F1FE3AC924049D4C00084AE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/libhooker/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1421,12 +1419,16 @@
 		F1FE3ACA24049D4C00084AE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				"ARCHS[sdk=appletvos*]" = "$(ARCHS_STANDARD)";
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/libhooker/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

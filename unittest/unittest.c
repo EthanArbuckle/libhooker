@@ -24,18 +24,33 @@
 #endif
 
 #define ASSERT(condition, message) \
-    do { \
-        if (!(condition)) { \
-            printf("%s:%d: %s: Test failed: %s\n", \
-                   __FILE__, __LINE__, __func__, message); \
-            return -1; \
-        } \
-    } while (0)
+do { \
+if (!(condition)) { \
+printf("%s:%d: %s: Test failed: %s\n", \
+__FILE__, __LINE__, __func__, message); \
+return -1; \
+} \
+} while (0)
+
+
+#define ASSERT_NO_RET(condition, message) \
+do { \
+if (!(condition)) { \
+printf("%s:%d: %s: Test failed: %s\n", \
+__FILE__, __LINE__, __func__, message); \
+return; \
+} \
+} while (0)
+
+#define RUN_TEST_NO_RET(test) do { \
+printf("Running test: %s\n", #test); \
+test(); \
+} while (0)
 
 #define RUN_TEST(test) do { \
-        printf("Running test: %s\n", #test); \
-        if (test() == KERN_SUCCESS) printf("  PASSED\n"); \
-    } while (0)
+printf("Running test: %s\n", #test); \
+if (test() == KERN_SUCCESS) printf("  PASSED\n"); \
+} while (0)
 
 #define    CS_OPS_STATUS        0    /* return status */
 int csops(pid_t pid, unsigned int  ops, void * useraddr, size_t usersize);
@@ -46,7 +61,7 @@ void printCSOps(void){
     printf("retval: %d, ops: 0x%x\n", retval, ops);
 }
 
-kern_return_t test_LHOpenImage(void) {
+static kern_return_t test_LHOpenImage(void) {
     
     void *expectedHandle = dlopen("/usr/lib/swift/libswiftDemangle.dylib", RTLD_NOW);
     ASSERT(expectedHandle, "dlopen returned NULL");
@@ -70,7 +85,7 @@ kern_return_t test_LHOpenImage(void) {
     int cond3 = lhHandle->slide == expectedSlide;
     
     LHCloseImage(lhHandle);
-
+    
     ASSERT(cond1, "LH's dyldHandle doesn't match dlopen's");
     ASSERT(cond2, "LH's imageHeader doesn't match _dyld_get_image_header()");
     ASSERT(cond3, "LH's slide doesn't match _dyld_get_image_vmaddr_slide");
@@ -78,7 +93,7 @@ kern_return_t test_LHOpenImage(void) {
     return KERN_SUCCESS;
 }
 
-kern_return_t test_LHFindSymbols__single_symbol_and_invoke(void) {
+static kern_return_t test_LHFindSymbols__single_symbol_and_invoke(void) {
     
     const char *symbol_names[1] = {
         "_swift_demangle_getDemangledName"
@@ -92,7 +107,7 @@ kern_return_t test_LHFindSymbols__single_symbol_and_invoke(void) {
     
     ASSERT(success, "LHFindSymbols() failed");
     ASSERT(symbol_pointers[0], "LHFindSymbols failed to find _swift_demangle_getDemangledName");
-
+    
     // Make sure returned symbols are callable
     char demangled[65];
     ((size_t (*)(const char *, char *, size_t))symbol_pointers[0])("_TMaC17find_the_treasure15YD_Secret_Class", demangled, 65);
@@ -102,7 +117,7 @@ kern_return_t test_LHFindSymbols__single_symbol_and_invoke(void) {
     return KERN_SUCCESS;
 }
 
-kern_return_t test_LHFindSymbols__single_symbol(void) {
+static kern_return_t test_LHFindSymbols__single_symbol(void) {
     
     const char *symbol_names[1] = {
         "_kCTUIFontTextStyleBody"
@@ -121,7 +136,7 @@ kern_return_t test_LHFindSymbols__single_symbol(void) {
     return KERN_SUCCESS;
 }
 
-kern_return_t test_LHFindSymbols__multiple_symbols(void) {
+static kern_return_t test_LHFindSymbols__multiple_symbols(void) {
     
     const char *symbol_names[7] = {
         "_abort",
@@ -156,7 +171,7 @@ kern_return_t test_getDyldCacheHeader(void) {
 
 __attribute__((aligned(0x4000)))
 int _test_LHPatchMemory_single_patch_target(void) { return -10; }
-kern_return_t test_LHPatchMemory_single_patch(void) {
+static kern_return_t test_LHPatchMemory_single_patch(void) {
     
     int expectedOriginalValue = -10;
     int expectedReplacementValue = 5;
@@ -173,7 +188,7 @@ kern_return_t test_LHPatchMemory_single_patch(void) {
     };
     
     int successfulPatches = LHPatchMemory(&patch, 1);
-
+    
     ASSERT(successfulPatches == 1, "LHPatchMemory() failed");
     ASSERT(expectedReplacementValue == _test_LHPatchMemory_single_patch_target(), "Function didn't have expected retval after memory patch");
     
@@ -182,12 +197,12 @@ kern_return_t test_LHPatchMemory_single_patch(void) {
 
 __attribute__((aligned(0x4000)))
 int _test_LHPatchMemory_multiple_patches_target(void) { return 45; }
-kern_return_t test_LHPatchMemory_multiple_patches(void) {
+static kern_return_t test_LHPatchMemory_multiple_patches(void) {
     
     int expectedOriginalValue_1 = 45;
     int expectedReplacementValue_1 = 10;
     int expectedReplacementValue_2 = 3;
-
+    
     char replacementInstrs_1[] = {
         0x40, 0x01, 0x80, 0xd2, // mov x0, #10
         0xc0, 0x03, 0x5f, 0xd6  // ret
@@ -209,7 +224,7 @@ kern_return_t test_LHPatchMemory_multiple_patches(void) {
     };
     
     int successfulPatches = LHPatchMemory(patches, 2);
-
+    
     ASSERT(successfulPatches == 2, "LHPatchMemory() failed");
     ASSERT(expectedReplacementValue_1 == _test_LHPatchMemory_multiple_patches_target(), "Function didn't have expected retval after memory patch");
     
@@ -225,7 +240,7 @@ __attribute__((aligned(0x4000)))
 int (*_test_LHFunctionHook__single_function_target_orig)(void);
 int _test_LHFunctionHook__single_function_target(void) { getpid(); return 1; }
 int _test_LHFunctionHook__single_function_replacement(void) { getpid(); return 2; }
-kern_return_t test_LHFunctionHook__single_function(void) {
+static kern_return_t test_LHFunctionHook__single_function(void) {
     
     int expectedOriginalValue = _test_LHFunctionHook__single_function_target();
     int expectedReplacementValue = _test_LHFunctionHook__single_function_replacement();
@@ -249,7 +264,7 @@ int (*_test_LHFunctionHook__double_hook_target1_orig)(void);
 int _test_LHFunctionHook__double_hook_target(void) { getpid(); return 3; }
 int _test_LHFunctionHook__double_hook_replacement1(void) { getpid(); return 4; }
 int _test_LHFunctionHook__double_hook_replacement2(void) { getpid(); return 5; }
-kern_return_t test_LHFunctionHook__double_hook(void) {
+static kern_return_t test_LHFunctionHook__double_hook(void) {
     
     int expectedOriginalValue = _test_LHFunctionHook__double_hook_target();
     int expectedReplacementValue1 = _test_LHFunctionHook__double_hook_replacement1();
@@ -284,9 +299,9 @@ kern_return_t test_LHFunctionHook__double_hook(void) {
 __attribute__((aligned(0x4000)))
 static int (*_test_LHFunctionHook__unlink_orig)(const char *);
 static int _test_LHFunctionHook__unlink_replacement(const char *path) { getpid(); return 14; }
-static int test_LHFunctionHook__unlink(void) {
+static kern_return_t test_LHFunctionHook__unlink(void) {
     
-    // Someone mentioned that calling orig on hooked unlink() fails on ellekit
+    // Someone mentioned that calling orig on hooked unlink() can be problematic
     struct LHFunctionHook hooks[] = {
         {&unlink, &_test_LHFunctionHook__unlink_replacement, &_test_LHFunctionHook__unlink_orig}
     };
@@ -301,93 +316,123 @@ static int test_LHFunctionHook__unlink(void) {
     
     ASSERT([[NSFileManager defaultManager] fileExistsAtPath:tmpTestFile] == NO, "unlink_orig did not delete the file");
     [[NSFileManager defaultManager] removeItemAtPath:tmpTestFile error:nil];
-
+    
     return KERN_SUCCESS;
 }
 
-void tests(void) {
 
+int (*_test_LHFunctionHook__4_instruction_function_target_orig)(int arg1, int arg2);
+__attribute__((naked)) int _test_LHFunctionHook__4_instruction_function_target(int arg1, int arg2) {
+    __asm__ volatile (
+                      "cbz x0, #0x8\n"      // if arg1 is 0, jump to the nop, skipping the add
+                      "add x0, x1, x0\n"
+                      "nop\n"
+                      "ret"
+                      );
+}
+__attribute__((aligned(0x4000))) int _test_LHFunctionHook__4_instruction_function_replacement(int arg1, int arg2) {
+    return _test_LHFunctionHook__4_instruction_function_target_orig(arg1, arg2) + 1;
+}
+static kern_return_t test_LHFunctionHook__4_instruction_function(void) {
+    
+    int expectedOriginalValue1 = 5;
+    int expectedReplacementValue1 = expectedOriginalValue1 + 1;
+    int expectedOriginalValue2 = 0;
+    int expectedReplacementValue2 = expectedOriginalValue2 + 1;
+    
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target(3, 2) == expectedOriginalValue1, "Pre-hook target function didn't return the expected value (3 + 2)");
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target(0, 2) == expectedOriginalValue2, "Pre-hook target function didn't return the expected value (0 + 2)");
+    
+    struct LHFunctionHook hooks[] = {
+        {&_test_LHFunctionHook__4_instruction_function_target, &_test_LHFunctionHook__4_instruction_function_replacement, &_test_LHFunctionHook__4_instruction_function_target_orig}
+    };
+    int successfulHooks = LHHookFunctions(hooks, 1);
+    ASSERT(successfulHooks == 1, "LHHookFunctions failed");
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target_orig != NULL, "Original function ptr is null");
+    
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target(3, 2) == expectedReplacementValue1, "Post-hook function didn't return the expected value (3 + 2)");
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target(0, 2) == expectedReplacementValue2, "Post-hook function didn't return the expected value (0 + 2)");
+    
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target_orig(3, 2) == expectedOriginalValue1, "The orig fp didn't return the expected value (3 + 2)");
+    ASSERT(_test_LHFunctionHook__4_instruction_function_target_orig(0, 2) == expectedOriginalValue2, "The orig fp didn't return the expected value (0 + 2)");
+    
+    return KERN_SUCCESS;
+}
+
+CFIndex (*_test_LHFunctionHook__CFPreferencesGetAppIntegerValue_orig)(CFStringRef, CFStringRef, Boolean *);
+int _test_LHFunctionHook__CFPreferencesGetAppIntegerValue_replacement(CFStringRef key, CFStringRef applicationID, Boolean *keyExistsAndHasValidFormat) {
+    return 1234;
+}
+static kern_return_t test_LHFunctionHook__CFPreferencesGetAppIntegerValue(void) {
+    
+    Boolean keyExistsAndHasValidFormat;
+    CFIndex expectedOriginalValue = CFPreferencesGetAppIntegerValue(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &keyExistsAndHasValidFormat);
+    CFIndex expectedReplacementValue = _test_LHFunctionHook__CFPreferencesGetAppIntegerValue_replacement(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &keyExistsAndHasValidFormat);
+    ASSERT(expectedOriginalValue != expectedReplacementValue, "The target and replacement test functions have the same return value");
+    
+    struct LHFunctionHook hooks[] = {
+        {&CFPreferencesGetAppIntegerValue, &_test_LHFunctionHook__CFPreferencesGetAppIntegerValue_replacement, &_test_LHFunctionHook__CFPreferencesGetAppIntegerValue_orig}
+    };
+    int successfulHooks = LHHookFunctions(hooks, 1);
+    ASSERT(successfulHooks == 1, "LHHookFunctions failed");
+    ASSERT(_test_LHFunctionHook__CFPreferencesGetAppIntegerValue_orig != NULL, "Original function ptr is null");
+    
+    ASSERT(CFPreferencesGetAppIntegerValue(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &keyExistsAndHasValidFormat) == expectedReplacementValue, "Function didn't return the expected value");
+    ASSERT(_test_LHFunctionHook__CFPreferencesGetAppIntegerValue_orig(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &keyExistsAndHasValidFormat) == expectedOriginalValue, "The orig fp didn't return the expected value");
+    
+    return KERN_SUCCESS;
+}
+
+static int _test_LHFunctionHook__UIApplicationInitialized_did_intercept = 0;
+static dispatch_semaphore_t _test_LHFunctionHook__UIApplicationInitialized_did_intercept_sem;
+size_t (*_test_LHFunctionHook__UIApplicationInitialize_orig)(void);
+static size_t _test_LHFunctionHook__UIApplicationInitialize_replacement(const char *path) {
+    _test_LHFunctionHook__UIApplicationInitialized_did_intercept = 1;
+    dispatch_semaphore_signal(_test_LHFunctionHook__UIApplicationInitialized_did_intercept_sem);
+    return _test_LHFunctionHook__UIApplicationInitialize_orig();
+}
+static void test_LHFunctionHook__UIApplicationInitialize(void) {
+    
+    _test_LHFunctionHook__UIApplicationInitialized_did_intercept_sem = dispatch_semaphore_create(0);
+    
+    const char *symbol_names[1] = {"_UIApplicationInitialize"};
+    void *symbol_pointers[1];
+    struct libhooker_image *lhHandle = LHOpenImage("/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore");
+    
+    LHFindSymbols(lhHandle, symbol_names, symbol_pointers, 1);
+    LHCloseImage(lhHandle);
+    
+    struct LHFunctionHook hooks[] = {
+        {symbol_pointers[0], &_test_LHFunctionHook__UIApplicationInitialize_replacement, &_test_LHFunctionHook__UIApplicationInitialize_orig},
+    };
+    
+    LHHookFunctions(hooks, 1);
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        dispatch_semaphore_wait(_test_LHFunctionHook__UIApplicationInitialized_did_intercept_sem, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)));
+        ASSERT_NO_RET(_test_LHFunctionHook__UIApplicationInitialized_did_intercept == 1, "Failed to intercept invocation to UIApplicationInitialize");
+        printf("  PASSED\n");
+    });
+}
+
+void tests(void) {
+    
     RUN_TEST(test_LHOpenImage);
     RUN_TEST(test_LHFindSymbols__single_symbol_and_invoke);
     RUN_TEST(test_LHFindSymbols__single_symbol);
     RUN_TEST(test_LHFindSymbols__multiple_symbols);
     RUN_TEST(test_getDyldCacheHeader);
-
+    
     RUN_TEST(test_LHPatchMemory_single_patch);
     RUN_TEST(test_LHPatchMemory_multiple_patches);
-
+    
     RUN_TEST(test_LHFunctionHook__single_function);
     RUN_TEST(test_LHFunctionHook__double_hook);
     RUN_TEST(test_LHFunctionHook__unlink);
-}
-
-void (*origBadFunction)(void *ptr, void *ptr2);
-
-__attribute__((aligned(0x4000))) //separate page
-void replacementBadFunction(void *ptr, void *ptr2){
-    printf("Hooked short function successfully!\n");
-    origBadFunction(ptr, ptr2);
-}
-
-__attribute__((naked))
-int badFunction(int arg1, int arg2){
-    __asm__ volatile (
-        "cbz x0, #0x8\n"
-        "add x0, x1, x0\n"
-        "nop\n"
-        "ret"
-    );
-}
-
-__attribute__((aligned(0x4000))) //separate page
-void testBadFunctionHook(void){
-    printf("Testing Bad Function hooking!\n");
-    struct LHFunctionHook hooks[] = {
-        {&badFunction, &replacementBadFunction, &origBadFunction}
-    };
-    
-    printf("Calling with test1 & test2\n");
-    printf("Output: %d\n", badFunction(3, 2));
-    printf("Calling with just test2\n");
-    printf("Output: %d\n", badFunction(0, 2));
-    
-    printf("\n\nHooking\n\n");
-    LHHookFunctions(hooks, 1);
-    
-    printf("Calling with test1 & test2\n");
-    printf("Output: %d\n", badFunction(3, 2));
-    printf("Calling with just test2\n");
-    printf("Output: %d\n", badFunction(0, 2));
-}
-
-size_t (*origUIAppInitialize)(void);
-size_t newUIAppInitialize(void){
-    printf("Hooked UIAppInitialize!\n");
-    return origUIAppInitialize();
-}
-
-CFIndex (*oldCFPreferencesGetAppIntegerValue)(CFStringRef, CFStringRef, Boolean *);
-CFIndex newCFPreferencesGetAppIntegerValue(CFStringRef key, CFStringRef applicationID, Boolean *keyExistsAndHasValidFormat){
-    printf("Hooked CFPreferencesGetAppIntegerValue\n");
-    return oldCFPreferencesGetAppIntegerValue(key, applicationID, keyExistsAndHasValidFormat);
-}
-
-static void testSystemHook(void){
-    Boolean test;
-    CFPreferencesGetAppIntegerValue(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &test);
-    
-    const char *names[1] = {"_UIApplicationInitialize"};
-    void *symbols[1];
-    struct libhooker_image *uikitcore = LHOpenImage("/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore");
-    LHFindSymbols(uikitcore, names, symbols, 1);
-    LHCloseImage(uikitcore);
-    struct LHFunctionHook hooks[] = {
-        {symbols[0], &newUIAppInitialize, &origUIAppInitialize},
-        {CFPreferencesGetAppIntegerValue, &newCFPreferencesGetAppIntegerValue, &oldCFPreferencesGetAppIntegerValue}
-    };
-    LHHookFunctions(hooks, 2);
-    
-    CFPreferencesGetAppIntegerValue(CFSTR("canvas_width"), CFSTR("com.apple.iokit.IOMobileGraphicsFamily"), &test);
+    RUN_TEST(test_LHFunctionHook__4_instruction_function);
+    RUN_TEST(test_LHFunctionHook__CFPreferencesGetAppIntegerValue);
+    RUN_TEST_NO_RET(test_LHFunctionHook__UIApplicationInitialize);
 }
 
 __attribute__((aligned(0x4000))) //separate page

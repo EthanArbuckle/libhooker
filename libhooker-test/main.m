@@ -11,29 +11,34 @@
 #import <sys/utsname.h>
 #import "../unittest/unittest.c"
 
-static void (*origObjcFunction)(AppDelegate *, SEL);
-
-static void testObjcReplacement(AppDelegate *self, SEL _cmd){
-    origObjcFunction(self, _cmd);
-    
-    NSLog(@"%@",@"Well we hooked it successfully!");
+static int (*_test_LBHookMessage_orig)(AppDelegate *, SEL);
+static int _test_LBHookMessage_replacement(AppDelegate *self, SEL _cmd) {
+    return _test_LBHookMessage_orig(self, _cmd) + 20;
 }
-
-void testObjcHook(void){
-    LBHookMessage([AppDelegate2 class], @selector(test), (IMP)&testObjcReplacement, (IMP *)&origObjcFunction);
+static kern_return_t test_LBHookMessage(void) {
+    
+    int expectedOriginalValue = [[AppDelegate2 new] test];
+    int expectedReplacementValue = expectedOriginalValue + 20;
+    
+    int result = LBHookMessage([AppDelegate2 class], @selector(test), (IMP)&_test_LBHookMessage_replacement, (IMP *)&_test_LBHookMessage_orig);
+    ASSERT(result == LIBHOOKER_OK, "LBHookMessage() failed");
+    ASSERT(_test_LBHookMessage_orig != NULL, "Orig fp is NULL");
+    
+    ASSERT([[AppDelegate2 new] test] == expectedReplacementValue, "Hooked method did not return the expected value");
+    ASSERT(_test_LBHookMessage_orig([AppDelegate2 new], @selector(test)) == expectedOriginalValue, "Orig fp didn't return the expected value");
+    
+    return KERN_SUCCESS;
 }
 
 /*void testReverseEngineering(){
-    uint64_t lrAddr = 0;
-    asm("mov %0, x30"
-        : "=r"(lrAddr)
-        : "0"(lrAddr));
-    printf("Executable Name: %s (should be self)\n", LHAddrExecutable(lrAddr));
-    
-    printf("Executable Name: %s (should be libsystem)\n", LHAddrExecutable((void *)dlsym(RTLD_DEFAULT, "uname")));
-}*/
-
-extern char **environ;
+ uint64_t lrAddr = 0;
+ asm("mov %0, x30"
+ : "=r"(lrAddr)
+ : "0"(lrAddr));
+ printf("Executable Name: %s (should be self)\n", LHAddrExecutable(lrAddr));
+ 
+ printf("Executable Name: %s (should be libsystem)\n", LHAddrExecutable((void *)dlsym(RTLD_DEFAULT, "uname")));
+ }*/
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {
@@ -49,21 +54,17 @@ int main(int argc, char * argv[]) {
         }
         
         printCSOps();
-        testDyld();
-        testMemoryHook();
-        testFunctionHook();
-        testBadFunctionHook();
-        testSystemHook();
-        //testLHHook();
-        testObjcHook();
+        RUN_TEST(test_LBHookMessage);
+        tests();
+
         //testReverseEngineering();
         
         /*uint32_t opcode = *((uint32_t *)&CFBundleCopyResourceURL);
-        free(handle_cbz((uint64_t)&CFBundleCopyResourceURL, opcode));
-        free(handle_tbz((uint64_t)&CFBundleCopyResourceURL, 0x361001e0));
-        free(handle_bCond((uint64_t)&CFBundleCopyResourceURL, 0x540001eb));
-        free(handle_ldr((uint64_t)&CFBundleCopyResourceURL, 0x581fffea));
-        free(handle_ldr((uint64_t)&CFBundleCopyResourceURL, 0x981fffea));*/
+         free(handle_cbz((uint64_t)&CFBundleCopyResourceURL, opcode));
+         free(handle_tbz((uint64_t)&CFBundleCopyResourceURL, 0x361001e0));
+         free(handle_bCond((uint64_t)&CFBundleCopyResourceURL, 0x540001eb));
+         free(handle_ldr((uint64_t)&CFBundleCopyResourceURL, 0x581fffea));
+         free(handle_ldr((uint64_t)&CFBundleCopyResourceURL, 0x981fffea));*/
         
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate2 class]));
     }
