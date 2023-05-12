@@ -47,16 +47,33 @@ int main(int argc, char * argv[]) {
         
         printf("kern: %s\n", kern.version);
         
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
         if (ptrauth_sign_unauthenticated((void *)0x12345, ptrauth_key_asda, 0) == (void *)0x12345){
             printf("Running without PAC\n");
         } else {
             printf("Running with PAC\n");
         }
-        
+#pragma GCC diagnostic pop
+
         printCSOps();
         RUN_TEST(test_LBHookMessage);
-        tests();
-
+        RUN_TEST(test_LHOpenImage);
+        RUN_TEST(test_LHFindSymbols__single_symbol_and_invoke);
+        RUN_TEST(test_LHFindSymbols__single_symbol);
+        RUN_TEST(test_LHFindSymbols__multiple_symbols);
+        RUN_TEST(test_getDyldCacheHeader);
+        
+        RUN_TEST(test_LHPatchMemory_single_patch);
+        RUN_TEST(test_LHPatchMemory_multiple_patches);
+        
+        RUN_TEST(test_LHFunctionHook__single_function);
+        RUN_TEST(test_LHFunctionHook__double_hook);
+        RUN_TEST(test_LHFunctionHook__unlink);
+        RUN_TEST(test_LHFunctionHook__4_instruction_function);
+        RUN_TEST(test_LHFunctionHook__CFPreferencesGetAppIntegerValue);
+        RUN_TEST_NO_RET(test_LHFunctionHook__UIApplicationInitialize);
+        
         //testReverseEngineering();
         
         /*uint32_t opcode = *((uint32_t *)&CFBundleCopyResourceURL);

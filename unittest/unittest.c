@@ -416,25 +416,6 @@ static void test_LHFunctionHook__UIApplicationInitialize(void) {
     });
 }
 
-void tests(void) {
-    
-    RUN_TEST(test_LHOpenImage);
-    RUN_TEST(test_LHFindSymbols__single_symbol_and_invoke);
-    RUN_TEST(test_LHFindSymbols__single_symbol);
-    RUN_TEST(test_LHFindSymbols__multiple_symbols);
-    RUN_TEST(test_getDyldCacheHeader);
-    
-    RUN_TEST(test_LHPatchMemory_single_patch);
-    RUN_TEST(test_LHPatchMemory_multiple_patches);
-    
-    RUN_TEST(test_LHFunctionHook__single_function);
-    RUN_TEST(test_LHFunctionHook__double_hook);
-    RUN_TEST(test_LHFunctionHook__unlink);
-    RUN_TEST(test_LHFunctionHook__4_instruction_function);
-    RUN_TEST(test_LHFunctionHook__CFPreferencesGetAppIntegerValue);
-    RUN_TEST_NO_RET(test_LHFunctionHook__UIApplicationInitialize);
-}
-
 __attribute__((aligned(0x4000))) //separate page
 const char *(*origLHStrError)(int);
 const char *newLHStrError(int err){
