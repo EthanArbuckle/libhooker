@@ -72,6 +72,12 @@ int main(int argc, char * argv[]) {
         RUN_TEST(test_LHFunctionHook__unlink);
         RUN_TEST(test_LHFunctionHook__4_instruction_function);
         RUN_TEST(test_LHFunctionHook__CFPreferencesGetAppIntegerValue);
+        
+        RUN_TEST(test_shim__substrate_MSGetImageByName);
+        RUN_TEST(test_shim__substrate_MSFindSymbol);
+        RUN_TEST(test_shim__substrate_MSHookFunction);
+        RUN_TEST(test_shim__substrate_MSHookMessageEx);
+        
         RUN_TEST_NO_RET(test_LHFunctionHook__UIApplicationInitialize);
         
         //testReverseEngineering();

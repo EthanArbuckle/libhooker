@@ -31,10 +31,7 @@ void testObjcHook(void){
     
     printf("kern: %s\n", kern.version);
     
-    printCSOps();
-    //testDyld();
-    testMemoryHook();
-    testFunctionHook();
+    tests();
     testBadFunctionHook();
     //testSystemHook();
     testObjcHook();

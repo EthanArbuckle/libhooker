@@ -2,6 +2,7 @@
 #import <ptrauth.h>
 #import <unistd.h>
 #import <objc/runtime.h>
+#import <objc/message.h>
 #import <mach-o/dyld.h>
 #import <CoreFoundation/CoreFoundation.h>
 
@@ -434,4 +435,88 @@ __unused static void testLHHook(void){
     LHHookFunctions(hooks, 1);
     
     printf("New Error: %s\n", LHStrError(-30));
+}
+
+extern void *MSGetImageByName(const char *filename);
+kern_return_t test_shim__substrate_MSGetImageByName(void) {
+    
+    void *handle = MSGetImageByName("/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore");
+    ASSERT(handle != NULL, "MSGetImageByName() returned NULL");
+    
+    return KERN_SUCCESS;
+}
+
+extern void *MSFindSymbol(void *image, const char *name);
+kern_return_t test_shim__substrate_MSFindSymbol(void) {
+    
+    void *handle = dlopen("/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore", RTLD_NOW);
+    void *symbol = MSFindSymbol(handle, "_UIApplicationInitialize");
+    ASSERT(symbol != NULL, "MSFindSymbol() returned NULL");
+    
+    return KERN_SUCCESS;
+}
+
+extern void MSHookFunction(void *symbol, void *replace, void **result);
+__attribute__((aligned(0x4000)))
+int (*_test_shim__substrate_MSHookFunction_orig)(void);
+int _test_shim__substrate_MSHookFunction_target(void) { getpid(); return KERN_FAILURE; }
+int _test_shim__substrate_MSHookFunction_replacement(void) { return KERN_SUCCESS; }
+kern_return_t test_shim__substrate_MSHookFunction(void) {
+    
+    int expectedOriginalValue = _test_shim__substrate_MSHookFunction_target();
+    int expectedReplacementValue = _test_shim__substrate_MSHookFunction_replacement();
+    ASSERT(expectedOriginalValue != expectedReplacementValue, "The target and replacement test functions have the same return value");
+    
+    struct LHFunctionHook hooks[] = {
+        {&_test_shim__substrate_MSHookFunction_target, &_test_shim__substrate_MSHookFunction_replacement, &_test_shim__substrate_MSHookFunction_orig}
+    };
+    int successfulHooks = LHHookFunctions(hooks, 1);
+    ASSERT(successfulHooks == 1, "LHHookFunctions failed");
+    ASSERT(_test_shim__substrate_MSHookFunction_orig != NULL, "Original function ptr is null");
+    
+    ASSERT(_test_shim__substrate_MSHookFunction_target() == expectedReplacementValue, "Post-hook function didn't return the expected value");
+    ASSERT(_test_shim__substrate_MSHookFunction_orig() == expectedOriginalValue, "The orig fp didn't return the expected value");
+    
+    return KERN_SUCCESS;
+}
+
+extern void MSHookMessageEx(Class _class, SEL sel, IMP imp, IMP *result);
+int (*_test_shim__substrate_MSHookMessageEx_orig)(void);
+kern_return_t test_shim__substrate_MSHookMessageEx(void) {
+    
+    // Given a class called MSHookMessageTestTarget
+    Class MSHookMessageTestTargetClass = objc_allocateClassPair(objc_getClass("NSObject"), "MSHookMessageTestTarget", 0);
+    
+    // And MSHookMessageTestTarget implements a class method called hookMethodTarget
+    // which always returns KERN_FAILURE
+    SEL hookMethodTarget = sel_registerName("hookMethodTarget");
+    IMP hookMethodTargetRealImp = imp_implementationWithBlock(^kern_return_t(id _self, SEL _cmd) {
+        return KERN_FAILURE;
+    });
+    
+    objc_registerClassPair(MSHookMessageTestTargetClass);
+    Class MSHookMessageTestTargetMetaClass = object_getClass(MSHookMessageTestTargetClass);
+    BOOL addedMethod = class_addMethod(MSHookMessageTestTargetMetaClass, hookMethodTarget, hookMethodTargetRealImp, "i@:");
+    ASSERT(addedMethod, "Failed to build MSHookMessageTestTarget class");
+    
+    // When I call +[MSHookMessageTestTarget hookMethodTarget], KERN_FAILURE is returned
+    ASSERT(((kern_return_t (*)(id, SEL))objc_msgSend)(MSHookMessageTestTargetClass, hookMethodTarget) == KERN_FAILURE, "Pre-hook hookMethodTarget didn't return the expected value");
+    
+    // And given a replacement IMP that always returns KERN_SUCCESS
+    IMP replacementImp = imp_implementationWithBlock(^kern_return_t (id _self, SEL _cmd) {
+        return KERN_SUCCESS;
+    });
+    
+    // When I hook the method using the MSHookMessageEx()
+    MSHookMessageEx(MSHookMessageTestTargetMetaClass, hookMethodTarget, replacementImp, (IMP *)&_test_shim__substrate_MSHookMessageEx_orig);
+    // The orig pointer has been populated
+    ASSERT(_test_shim__substrate_MSHookMessageEx_orig != NULL, "Original function ptr is NULL");
+    
+    // And calling the method now returns the replacement IMP's value
+    ASSERT(((kern_return_t (*)(id, SEL))objc_msgSend)(MSHookMessageTestTargetClass, hookMethodTarget) == KERN_SUCCESS, "Post-hook function didn't return the expected value");
+    
+    // And calling the original fp returns the method's original pre-hook value
+    ASSERT(_test_shim__substrate_MSHookMessageEx_orig() == KERN_FAILURE, "The orig fp didn't return the expected value");
+    
+    return KERN_SUCCESS;
 }

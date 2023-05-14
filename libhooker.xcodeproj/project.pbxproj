@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE4790BC2A113E2900BDC79E /* substrate-shim.c in Sources */ = {isa = PBXBuildFile; fileRef = CE4790BB2A113E2900BDC79E /* substrate-shim.c */; };
 		F1243178240DEECC006439CC /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F1243176240DEECC006439CC /* Interface.storyboard */; };
 		F1243181240DEECD006439CC /* libhooker-watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F1243180240DEECD006439CC /* libhooker-watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		F1243190240DEECE006439CC /* libhooker-watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = F1243174240DEECC006439CC /* libhooker-watch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F124319E240DF0B2006439CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F124319D240DF0B2006439CC /* Assets.xcassets */; };
 		F12431A6240DF0CD006439CC /* ExtensionDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F12431A0240DF0CD006439CC /* ExtensionDelegate.m */; };
 		F12431A7240DF0CD006439CC /* InterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F12431A2240DF0CD006439CC /* InterfaceController.m */; };
@@ -57,13 +57,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = F124317F240DEECD006439CC;
 			remoteInfo = "libhooker-watch Extension";
-		};
-		F124318E240DEECE006439CC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F1D82F1D2308BF3000EECCAE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F1243173240DEECC006439CC;
-			remoteInfo = "libhooker-watch";
 		};
 		F16DE39225C637FD002B0A52 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -135,17 +128,6 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F1243198240DEECE006439CC /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				F1243190240DEECE006439CC /* libhooker-watch.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F16DE32A25C63798002B0A52 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -185,6 +167,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE4790BB2A113E2900BDC79E /* substrate-shim.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "substrate-shim.c"; sourceTree = "<group>"; };
 		F1243174240DEECC006439CC /* libhooker-watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "libhooker-watch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1243177240DEECC006439CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		F124317B240DEECD006439CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -438,6 +421,7 @@
 		F1D82F312308BF5C00EECCAE /* libhooker */ = {
 			isa = PBXGroup;
 			children = (
+				CE4790BB2A113E2900BDC79E /* substrate-shim.c */,
 				F1686ED92400B99C00DBDE02 /* include */,
 				F1FE3AD52404D56C00084AE4 /* misc */,
 				F14F2DF8240139AF00F4BD27 /* as-aarch64 */,
@@ -642,14 +626,12 @@
 				F1D82F3A2308C7A000EECCAE /* Sources */,
 				F1D82F3B2308C7A000EECCAE /* Frameworks */,
 				F1D82F3C2308C7A000EECCAE /* Resources */,
-				F1243198240DEECE006439CC /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				F1D82F732308C7BB00EECCAE /* PBXTargetDependency */,
 				F1FE3AD12404AC9000084AE4 /* PBXTargetDependency */,
-				F124318F240DEECE006439CC /* PBXTargetDependency */,
 			);
 			name = "libhooker-test";
 			productName = "libhooker-test";
@@ -850,6 +832,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE4790BC2A113E2900BDC79E /* substrate-shim.c in Sources */,
 				F16DE2EC25C63630002B0A52 /* shadowMem.c in Sources */,
 				F14F2DFF2403DEE700F4BD27 /* funcHook.c in Sources */,
 				F14CFD262502EE3C003D6C4F /* shadowMem.cpp in Sources */,
@@ -904,11 +887,6 @@
 			isa = PBXTargetDependency;
 			target = F124317F240DEECD006439CC /* libhooker-watch Extension */;
 			targetProxy = F1243182240DEECD006439CC /* PBXContainerItemProxy */;
-		};
-		F124318F240DEECE006439CC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F1243173240DEECC006439CC /* libhooker-watch */;
-			targetProxy = F124318E240DEECE006439CC /* PBXContainerItemProxy */;
 		};
 		F16DE39325C637FD002B0A52 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1024,7 +1002,7 @@
 				ARCHS = arm64_32;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TCM49M8P5K;
+				DEVELOPMENT_TEAM = 44L979X757;
 				IBSC_MODULE = libhooker_watch_Extension;
 				INFOPLIST_FILE = "libhooker-watch/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.coolstar.libhooker-test.watchkitapp";
@@ -1034,6 +1012,7 @@
 				SUPPORTED_PLATFORMS = "watchsimulator watchos";
 				TARGETED_DEVICE_FAMILY = 4;
 				VALID_ARCHS = arm64_32;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -1053,6 +1032,7 @@
 				SUPPORTED_PLATFORMS = "watchsimulator watchos";
 				TARGETED_DEVICE_FAMILY = 4;
 				VALID_ARCHS = arm64_32;
+				WATCHOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
